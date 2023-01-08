@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MP3 Player</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      width: 500px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    input[type="radio"] {
+      margin-right: 10px;
+    }
+    #drop-zone {
+      border: 2px dashed #ccc;
+      border-radius: 20px;
+      width: 500px;
+      margin: 20px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    #drop-zone.highlight {
+      border-color: #000;
+      background-color: #eee;
+    }
+    audio {
+      display: block;
+      margin: 20px auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>MP3 Player</h1>
+  <form action="" method="post" enctype="multipart/form-data">
+    <div id="drop-zone">
+      <p>Drag and drop an MP3 file here, or</p>
+      <input type="radio" name="source" value="upload" checked> click to select an MP3 file to upload<br>
+      <input type="file" name="mp3" accept=".mp3"><br><br>
+      <input type="radio" name="source" value="url"> enter the URL of an MP3 file<br>
+      <input type="text" name="url"><br><br>
+      <input type="submit" value="Play">
+    </div>
+  </form>
+  <br>
+  <audio id="player" controls></audio>
+  <script>
+    const player = document.getElementById('player');
+    const form = document.querySelector('form');
+    const dropZone = document.getElementById('drop-zone');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const source = form.querySelector('input[name="source"]:checked').value;
+      if (source === 'upload') {
+        const fileInput = form.querySelector('input[type="file"]');
+        player.src = URL.createObjectURL(fileInput.files[0]);
+      } else if (source === 'url') {
+        const urlInput = form.querySelector('input[name="url"]');
+        player.src = urlInput.value;
+      }
+      player.load();
+      player.play();
+    });
+    dropZone.addEventListener('dragover', e => {
+      e.preventDefault();
+      dropZone.classList.add('highlight');
+    });
+    dropZone.addEventListener('dragleave', e => {
+      e.preventDefault();
+      dropZone.classList.remove('highlight');
+    });
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+     
+      dropZone.classList.remove('highlight');
+    const file = e.dataTransfer.files[0];
+    if (file.type !== 'audio/mpeg') {
+      alert('Please drop an MP3 file.');
+      return;
+    }
+    player.src = URL.createObjectURL(file);
+    player.load();
+    player.play();
+  });
+  </script>
+</body>
+</html>
